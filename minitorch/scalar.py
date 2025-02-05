@@ -63,10 +63,10 @@ class Scalar:
     name: str
 
     def __init__(
-        self,
-        v: float,
-        back: ScalarHistory = ScalarHistory(),
-        name: Optional[str] = None,
+            self,
+            v: float,
+            back: ScalarHistory = ScalarHistory(),
+            name: Optional[str] = None,
     ):
         global _var_count
         _var_count += 1
@@ -92,31 +92,25 @@ class Scalar:
         return Mul.apply(b, Inv.apply(self))
 
     def __add__(self, b: ScalarLike) -> Scalar:
-        # TODO: Implement for Task 1.2.
-        raise NotImplementedError('Need to implement for Task 1.2')
+        return Add.apply(self, b)
 
     def __bool__(self) -> bool:
         return bool(self.data)
 
     def __lt__(self, b: ScalarLike) -> Scalar:
-        # TODO: Implement for Task 1.2.
-        raise NotImplementedError('Need to implement for Task 1.2')
+        return LT.apply(self, b)
 
     def __gt__(self, b: ScalarLike) -> Scalar:
-        # TODO: Implement for Task 1.2.
-        raise NotImplementedError('Need to implement for Task 1.2')
+        return LT.apply(b, self)
 
     def __eq__(self, b: ScalarLike) -> Scalar:  # type: ignore[override]
-        # TODO: Implement for Task 1.2.
-        raise NotImplementedError('Need to implement for Task 1.2')
+        return EQ.apply(self, b)
 
     def __sub__(self, b: ScalarLike) -> Scalar:
-        # TODO: Implement for Task 1.2.
-        raise NotImplementedError('Need to implement for Task 1.2')
+        return Add.apply(self, -b)
 
     def __neg__(self) -> Scalar:
-        # TODO: Implement for Task 1.2.
-        raise NotImplementedError('Need to implement for Task 1.2')
+        return Neg.apply(self)
 
     def __radd__(self, b: ScalarLike) -> Scalar:
         return self + b
@@ -125,20 +119,15 @@ class Scalar:
         return self * b
 
     def log(self) -> Scalar:
-        # TODO: Implement for Task 1.2.
-        raise NotImplementedError('Need to implement for Task 1.2')
+        return Log.apply(self.data)
 
     def exp(self) -> Scalar:
-        # TODO: Implement for Task 1.2.
-        raise NotImplementedError('Need to implement for Task 1.2')
+        return Exp.apply(self)
 
     def sigmoid(self) -> Scalar:
-        # TODO: Implement for Task 1.2.
-        raise NotImplementedError('Need to implement for Task 1.2')
-
+        return Sigmoid.apply(self)
     def relu(self) -> Scalar:
-        # TODO: Implement for Task 1.2.
-        raise NotImplementedError('Need to implement for Task 1.2')
+        return ReLU.apply(self)
 
     # Variable elements for backprop
 
@@ -168,6 +157,11 @@ class Scalar:
         return self.history.inputs
 
     def chain_rule(self, d_output: Any) -> Iterable[Tuple[Variable, Any]]:
+        """
+        可以通过传递一个context和d_output来收集局部梯度，进而达到反向处理函数的目的
+        它需要将梯度和对应的变量正确配对，并返回。
+        也是在这个函数中，过滤掉传给前向的常数，但是不需要导数。
+        """
         h = self.history
         assert h is not None
         assert h.last_fn is not None
@@ -214,5 +208,5 @@ but was expecting derivative f'=%f from central difference."""
             1e-2,
             1e-2,
             err_msg=err_msg
-            % (str([x.data for x in scalars]), x.derivative, i, check.data),
+                    % (str([x.data for x in scalars]), x.derivative, i, check.data),
         )
